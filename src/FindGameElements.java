@@ -55,7 +55,7 @@ public class FindGameElements {
 		ConvertBufferedImage.convertTo(desktop, output);
 		Graphics2D g2 = output.createGraphics();
 		GrayF32 templateCookie = UtilImageIO.loadImage(directory , "cookie.jpg", GrayF32.class);
-		//FAILS TO LOAD TEMPLATE COOKIE!!!!
+		//FAILS TO LOAD TEMPLATE COOKIE!!!!!
 		g2.setColor(Color.BLUE); g2.setStroke(new BasicStroke(2));
 		drawRectangles(g2, templateCookie, null, 1);
 		ShowImages.showWindow(output, "Found Matches",true);
