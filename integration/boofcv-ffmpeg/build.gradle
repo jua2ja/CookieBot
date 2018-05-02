@@ -1,0 +1,27 @@
+
+// Hack around gradle including stuff it shouldn't
+//configurations {
+//    all*.exclude group: 'org.bytedeco', module: 'javacpp-presets'
+//}
+
+dependencies {
+    implementation project(':main:boofcv-ip')
+    implementation project(':main:boofcv-io')
+
+    implementation group: 'org.bytedeco.javacpp-presets', name: "ffmpeg", version: '3.4.1-1.4'
+    native_arch.each {
+        implementation group: 'org.bytedeco.javacpp-presets', name: "ffmpeg", version: '3.4.1-1.4', classifier: "${it}"
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDir 'test'
+            srcDir 'examples'
+        }
+        resources {
+            srcDir 'resources/test'
+        }
+    }
+}

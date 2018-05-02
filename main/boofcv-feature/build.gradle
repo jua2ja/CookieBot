@@ -1,0 +1,9 @@
+dependencies {
+    implementation project(':main:boofcv-ip')
+    
+    benchmarkImplementation project(':main:boofcv-io')
+    benchmarkImplementation project(':integration:boofcv-ffmpeg')
+
+    testImplementation project(':main:boofcv-io')
+    testImplementation project(':integration:boofcv-swing')
+}

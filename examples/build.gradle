@@ -1,0 +1,40 @@
+
+dependencies {
+    implementation project(':main:boofcv-ip')
+    implementation project(':main:boofcv-io')
+    implementation project(':main:boofcv-feature')
+    implementation project(':main:boofcv-geo')
+    implementation project(':main:boofcv-calibration')
+    implementation project(':main:boofcv-sfm')
+    implementation project(':main:boofcv-learning')
+    implementation project(':main:boofcv-recognition')
+    implementation project(':integration:boofcv-swing')
+    implementation project(':integration:boofcv-ffmpeg')
+    implementation project(':integration:boofcv-WebcamCapture')
+
+    compile 'org.reflections:reflections:0.9.10'
+}
+
+idea {
+    module {
+        name = "BoofCV Examples"
+    }
+}
+
+// Create a jar which contains all the applications
+task examples(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'BoofCV Examples Jar',
+                'Implementation-Version': version,
+                'Main-Class': 'boofcv.examples.ExampleLauncherApp'
+    }
+
+    outputs.upToDateWhen { false }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+
+    doLast {
+        archivePath.renameTo(file('examples.jar'))
+    }
+}
