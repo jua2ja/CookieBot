@@ -40,6 +40,7 @@ import boofcv.struct.feature.BrightFeature;
 import boofcv.struct.feature.ScalePoint;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.ImageGray;
+import boofcv.core.image;
 import georegression.struct.shapes.EllipseRotated_F64;
 
 import java.awt.AWTException;
