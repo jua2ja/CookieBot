@@ -37,11 +37,10 @@ public class FindGameElements {
 		GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
 		GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
 		Robot screenDeviceShot = null;
-		desktop = null;
 		//standard screenshot taking with java.awt.Robot
 		try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {System.exit(1);}
 		screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
-		desktop = ConvertBufferedImage.convertFrom(screenPicture, desktop);
+		
 	}	
 	
 	public void displayImage()

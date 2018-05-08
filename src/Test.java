@@ -1,143 +1,195 @@
+/*
+ * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
+ *
+ * This file is part of BoofCV (http://boofcv.org).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+import boofcv.abst.feature.detdesc.DetectDescribePoint;
+import boofcv.abst.feature.detect.extract.ConfigExtract;
+import boofcv.abst.feature.detect.extract.NonMaxSuppression;
+import boofcv.abst.feature.detect.interest.ConfigFastHessian;
+import boofcv.abst.feature.orientation.OrientationIntegral;
+import boofcv.alg.feature.describe.DescribePointSurf;
+import boofcv.alg.feature.detect.interest.FastHessianFeatureDetector;
+import boofcv.alg.transform.ii.GIntegralImageOps;
+import boofcv.core.image.GeneralizedImageOps;
+import boofcv.factory.feature.describe.FactoryDescribePointAlgs;
+import boofcv.factory.feature.detdesc.FactoryDetectDescribe;
+import boofcv.factory.feature.detect.extract.FactoryFeatureExtractor;
+import boofcv.factory.feature.orientation.FactoryOrientationAlgs;
+import boofcv.gui.feature.VisualizeShapes;
+import boofcv.gui.image.ShowImages;
+import boofcv.io.UtilIO;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.image.UtilImageIO;
+import boofcv.struct.BoofDefaults;
+import boofcv.struct.feature.BrightFeature;
+import boofcv.struct.feature.ScalePoint;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.ImageGray;
+import georegression.struct.shapes.EllipseRotated_F64;
+
+import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
-import boofcv.alg.feature.detect.template.*;
-import boofcv.alg.misc.*;
-import boofcv.factory.feature.detect.template.*;
-import boofcv.gui.image.*;
-import boofcv.io.*;
-import boofcv.io.image.*;
-import boofcv.struct.feature.*;
-import boofcv.struct.image.*;
-
 /**
- * Example of how to find objects inside an image using template matching.  Template matching works
- * well when there is little noise in the image and the object's appearance is known and static.  It can
- * also be very slow to compute, depending on the image and template size.
- *
+ * Example of how to use SURF detector and descriptors in BoofCV. 
+ * 
  * @author Peter Abeles
  */
 public class Test {
 
 	/**
-	 * Demonstrates how to search for matches of a template inside an image
-	 *
-	 * @param image           Image being searched
-	 * @param template        Template being looked for
-	 * @param mask            Mask which determines the weight of each template pixel in the match score
-	 * @param expectedMatches Number of expected matches it hopes to find
-	 * @return List of match location and scores
+	 * Use generalized interfaces for working with SURF.  This removes much of the drudgery, but also reduces flexibility
+	 * and slightly increases memory and computational requirements.
+	 * 
+	 *  @param image Input image type. DOES NOT NEED TO BE GrayF32, GrayU8 works too
 	 */
-	private static List<Match> findMatches(GrayF32 image, GrayF32 template, GrayF32 mask,
-										   int expectedMatches) {
-		// create template matcher.
-		TemplateMatching<GrayF32> matcher =
-				FactoryTemplateMatching.createMatcher(TemplateScoreType.SUM_DIFF_SQ, GrayF32.class);
+	public static void easy( BufferedImage imageB ) {
+		
+		GrayF32 image = ConvertBufferedImage.convertFrom(imageB,(GrayF32)null);
+		
+		// create the detector and descriptors
+		DetectDescribePoint<GrayF32,BrightFeature> surf = FactoryDetectDescribe.
+				surfStable(new ConfigFastHessian(0, 2, 200, 2, 9, 4, 4), null, null,GrayF32.class);
 
-		// Find the points which match the template the best
-		matcher.setImage(image);
-		matcher.setTemplate(template, mask,expectedMatches);
-		matcher.process();
+		 // specify the image to process
+		surf.detect(image);
 
-		return matcher.getResults().toList();
+		System.out.println("Found Features: "+surf.getNumberOfFeatures());
+		Graphics2D g2 = imageB.createGraphics();
+		g2.setStroke(new BasicStroke(3));
 
-	}
+		double total;
+		
+		
+		for(int i = 0; i < surf.getNumberOfFeatures(); i++)
+		{
+			total = 0;
+			for(int j = 0; j < surf.getDescription(i).value.length; j++)
+				total += surf.getDescription(i).value[j];
+			System.out.println(total);
 
-	/**
-	 * Computes the template match intensity image and displays the results. Brighter intensity indicates
-	 * a better match to the template.
-	 */
-	public static void showMatchIntensity(GrayF32 image, GrayF32 template, GrayF32 mask) {
-
-		// create algorithm for computing intensity image
-		TemplateMatchingIntensity<GrayF32> matchIntensity =
-				FactoryTemplateMatching.createIntensity(TemplateScoreType.SUM_DIFF_SQ, GrayF32.class);
-
-		// apply the template to the image
-		matchIntensity.setInputImage(image);
-		matchIntensity.process(template, mask);
-
-		// get the results
-		GrayF32 intensity = matchIntensity.getIntensity();
-
-		// adjust the intensity image so that white indicates a good match and black a poor match
-		// the scale is kept linear to highlight how ambiguous the solution is
-		float min = ImageStatistics.min(intensity);
-		float max = ImageStatistics.max(intensity);
-		float range = max - min;
-		PixelMath.plus(intensity, -min, intensity);
-		PixelMath.divide(intensity, range, intensity);
-		PixelMath.multiply(intensity, 255.0f, intensity);
-
-		BufferedImage output = new BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_BGR);
-		VisualizeImageData.grayMagnitude(intensity, output, -1);
-		ShowImages.showWindow(output, "Match Intensity", true);
-	}
-
-	public static void main(String args[]) {
-
-		// Load image and templates
-		String directory = UtilIO.pathExample("template");
-
-		GrayF32 image = UtilImageIO.loadImage(directory ,"desktop.png", GrayF32.class);
-		GrayF32 templateCursor = UtilImageIO.loadImage(directory , "cursor.png", GrayF32.class);
-		GrayF32 maskCursor = UtilImageIO.loadImage(directory , "cursor_mask.png", GrayF32.class);
-		GrayF32 templatePaint = UtilImageIO.loadImage(directory , "paint.png", GrayF32.class);
-
-		// create output image to show results
-		BufferedImage output = new BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_BGR);
-		ConvertBufferedImage.convertTo(image, output);
-		Graphics2D g2 = output.createGraphics();
-
-		// Search for the cursor in the image.  For demonstration purposes it has been pasted 3 times
-		g2.setColor(Color.RED); g2.setStroke(new BasicStroke(5));
-		drawRectangles(g2, image, templateCursor, maskCursor, 3);
-		// show match intensity image for this template
-		showMatchIntensity(image, templateCursor, maskCursor);
-
-		// Now it's try finding the cursor without a mask.  it will get confused when the background is black
-		g2.setColor(Color.BLUE); g2.setStroke(new BasicStroke(2));
-		drawRectangles(g2, image, templateCursor, null, 3);
-
-		// Now it searches for a specific icon for which there is only one match
-		g2.setColor(Color.ORANGE); g2.setStroke(new BasicStroke(3));
-		drawRectangles(g2, image, templatePaint, null, 1);
-
-		ShowImages.showWindow(output, "Found Matches",true);
-	}
-
-	/**
-	 * Helper function will is finds matches and displays the results as colored rectangles
-	 */
-	private static void drawRectangles(Graphics2D g2,
-									   GrayF32 image, GrayF32 template, GrayF32 mask,
-									   int expectedMatches) {
-		List<Match> found = findMatches(image, template, mask, expectedMatches);
-
-		int r = 2;
-		int w = template.width + 2 * r;
-		int h = template.height + 2 * r;
-
-		for (Match m : found) {
-			System.out.println("Match "+m.x+" "+m.y+"    score "+m.score);
-			// this demonstrates how to filter out false positives
-			// the meaning of score will depend on the template technique
-//			if( m.score < -1000 )  // This line is commented out for demonstration purposes
-//				continue;
-
-			// the return point is the template's top left corner
-			int x0 = m.x - r;
-			int y0 = m.y - r;
-			int x1 = x0 + w;
-			int y1 = y0 + h;
-
-			g2.drawLine(x0, y0, x1, y0);
-			g2.drawLine(x1, y0, x1, y1);
-			g2.drawLine(x1, y1, x0, y1);
-			g2.drawLine(x0, y1, x0, y0);
 		}
+		for(int j = 0; j < surf.getDescription(0).value.length; j++)
+			System.out.println(surf.getDescription(0).value[j]);
+	
+		
+		
+//		System.out.println("First descriptor's first value: "+surf.getDescription(0).value[0]);
+		for(int i = 0; i < surf.getNumberOfFeatures(); i++)
+		{
+//			System.out.println(surf.getLocation(i).x + " " + surf.getLocation(i).y);
+			total = 0;
+			for(int j = 0; j < surf.getDescription(0).value.length; j++)
+				total += surf.getDescription(0).value[j];
+//			System.out.println(total);
+			g2.setColor(new Color((int)total / 10));
+			EllipseRotated_F64 ellipse = new EllipseRotated_F64(surf.getLocation(i), surf.getRadius(i), surf.getRadius(i), surf.getRadius(i));
+			VisualizeShapes.drawEllipse(ellipse , g2);
+			}
+		ShowImages.showWindow(imageB,"Detected Ellipses",true);
+
+	}
+
+	/**
+	 * Configured exactly the same as the easy example above, but require a lot more code and a more in depth
+	 * understanding of how SURF works and is configured.  Instead of TupleDesc_F64, SurfFeature are computed in
+	 * this case.  They are almost the same as TupleDesc_F64, but contain the Laplacian's sign which can be used
+	 * to speed up association. That is an example of how using less generalized interfaces can improve performance.
+	 * 
+	 * @param image Input image type. DOES NOT NEED TO BE GrayF32, GrayU8 works too
+	 */
+	public static <II extends ImageGray<II>> void harder(GrayF32 image ) {
+		// SURF works off of integral images
+		Class<II> integralType = GIntegralImageOps.getIntegralType(GrayF32.class);
+		
+		// define the feature detection algorithm
+		NonMaxSuppression extractor =
+				FactoryFeatureExtractor.nonmax(new ConfigExtract(2, 0, 5, true));
+		FastHessianFeatureDetector<II> detector =
+				new FastHessianFeatureDetector<>(extractor, 200, 2, 9, 4, 4, 6);
+
+		// estimate orientation
+		OrientationIntegral<II> orientation = 
+				FactoryOrientationAlgs.sliding_ii(null, integralType);
+
+		DescribePointSurf<II> descriptor = FactoryDescribePointAlgs.<II>surfStability(null,integralType);
+		
+		// compute the integral image of 'image'
+		II integral = GeneralizedImageOps.createSingleBand(integralType,image.width,image.height);
+		GIntegralImageOps.transform(image, integral);
+
+		// detect fast hessian features
+		detector.detect(integral);
+		// tell algorithms which image to process
+		orientation.setImage(integral);
+		descriptor.setImage(integral);
+
+		List<ScalePoint> points = detector.getFoundPoints();
+
+		List<BrightFeature> descriptions = new ArrayList<>();
+
+		for( ScalePoint p : points ) {
+			// estimate orientation
+			orientation.setObjectRadius( p.scale*BoofDefaults.SURF_SCALE_TO_RADIUS);
+			double angle = orientation.compute(p.x,p.y);
+			
+			// extract the SURF description for this region
+			BrightFeature desc = descriptor.createDescription();
+			descriptor.describe(p.x,p.y,angle,p.scale,desc);
+
+			// save everything for processing later on
+			descriptions.add(desc);
+		}
+		
+		System.out.println("Found Features: "+points.size());
+		System.out.println("First descriptor's first value: "+descriptions.get(0).value[0]);
+	}
+
+	public static void main( String args[] ) {
+		
+		BufferedImage cookie = UtilImageIO.loadImage(UtilIO.pathExample("cookies/PerfectCookie.jpg"));
+		BufferedImage cookieB = UtilImageIO.loadImage(UtilIO.pathExample("cookies/BackgroundCookie.png"));		
+		
+		BufferedImage screenPicture;
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
+		GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
+		Robot screenDeviceShot = null;
+		//standard screenshot taking with java.awt.Robot
+		try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {System.exit(1);}
+		screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
+		
+		
+		// run each example
+//		Test.easy(cookie);
+		Test.easy(cookieB);
+		Test.easy(screenPicture);
+		
+		System.out.println("Done!");
+		
 	}
 }
