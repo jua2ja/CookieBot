@@ -131,19 +131,20 @@ public class Test {
 	public static void main( String args[] ) {
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
 
-	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 50);
+	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
 //	BufferedImage result = getScreen();
 	Mat src = BufferedImage2Mat(result);
 //	ShowImages.showWindow(matToBufferedImage(image), "test");
 		System.out.println("1");
 		Mat gray = new Mat();
 		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
-//		Imgproc.medianBlur(gray, gray, 5);
+		Imgproc.medianBlur(gray, gray, 5);
+
 		Mat circles = new Mat();
 		System.out.println("2");
 		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
 		(double)gray.rows()/16, // change this value to detect circles with different distances to each other
-		100.0, 30.0, 10, 200); // change the last two parameters
+		100.0, 30.0, 50, 200); // change the last two parameters
 		// (min_radius & max_radius) to detect larger circles
 		System.out.println("3");
 		for (int x = 0; x < circles.cols(); x++) {
