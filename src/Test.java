@@ -30,6 +30,8 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 
@@ -76,8 +78,9 @@ public class Test {
 	}
 	
 	public static void main( String args[] ) {
-		BufferedImage result = findColors(getScreen(), CHIPCOLOR, 50);
-		
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
+//		BufferedImage result = findColors(getScreen(), CHIPCOLOR, 50);
+
 
 		
 		System.out.println("Done!");
