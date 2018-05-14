@@ -1,3 +1,4 @@
+package src;
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
@@ -33,6 +34,9 @@ import java.awt.image.DataBufferInt;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -129,26 +133,22 @@ public class Test {
 
 	
 	public static void main( String args[] ) {
+	List<Point> points = new ArrayList<Point>();
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
-
 	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
 //	BufferedImage result = getScreen();
 	Mat src = BufferedImage2Mat(result);
 //	ShowImages.showWindow(matToBufferedImage(image), "test");
-		System.out.println("1");
 		Mat gray = new Mat();
 		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
-		Imgproc.medianBlur(gray, gray, 5);
+		Imgproc.medianBlur(gray, gray, 11);
 
 		Mat circles = new Mat();
-		System.out.println("2");
 		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
 		(double)gray.rows()/16, // change this value to detect circles with different distances to each other
 		100.0, 30.0, 50, 200); // change the last two parameters
 		// (min_radius & max_radius) to detect larger circles
-		System.out.println("3");
 		for (int x = 0; x < circles.cols(); x++) {
-			System.out.println(4 + x);
 			double[] c = circles.get(0, x);
 			Point center = new Point(Math.round(c[0]), Math.round(c[1]));
 			// circle center
@@ -156,14 +156,24 @@ public class Test {
 			// circle outline
 			int radius = (int) Math.round(c[2]);
 			Imgproc.circle(src, center, radius, new Scalar(255,0,255), 3, 8, 0 );
+			points.add(center);
 		}
+		System.out.println(stringList(points));
+
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
-		System.exit(0);
-
 	
 	
-	System.out.println("Done!");
+	}
 	
+	private static <T> String stringList(List<T> list)
+	{
+		String re = "";
+		for(T name : list)
+		{
+			re += name.toString();
+			re+= "\n";
+		}
+		return re;
 	}
 }

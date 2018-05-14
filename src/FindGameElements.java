@@ -1,3 +1,5 @@
+package src;
+
 import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -48,18 +50,6 @@ public class FindGameElements {
 		ShowImages.showWindow(desktop, "Desktop",true);
 	}
 	
-	public void findCookie()
-	{
-		BufferedImage output = new BufferedImage(desktop.width, desktop.height, BufferedImage.TYPE_INT_BGR);
-		ConvertBufferedImage.convertTo(desktop, output);
-		Graphics2D g2 = output.createGraphics();
-		GrayF32 templateCookie = UtilImageIO.loadImage(directory , "cookie.jpg", GrayF32.class);
-		//FAILS TO LOAD TEMPLATE COOKIE!!!!!
-		g2.setColor(Color.BLUE); g2.setStroke(new BasicStroke(2));
-		drawRectangles(g2, templateCookie, null, 1);
-		ShowImages.showWindow(output, "Found Matches",true);
-	}
-
 	/**
 	 * Helper function will is finds matches and displays the results as colored rectangles
 	 */
