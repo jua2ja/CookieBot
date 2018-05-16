@@ -1,3 +1,4 @@
+package src;
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
@@ -29,6 +30,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -124,6 +128,7 @@ public class Test {
 
 	
 	public static void main( String args[] ) {
+<<<<<<< HEAD
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
 	
 		BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
@@ -136,6 +141,18 @@ public class Test {
 		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
 		Imgproc.medianBlur(gray, gray, 11);
 	
+=======
+	List<Point> points = new ArrayList<Point>();
+	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
+	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
+//	BufferedImage result = getScreen();
+	Mat src = BufferedImage2Mat(result);
+//	ShowImages.showWindow(matToBufferedImage(image), "test");
+		Mat gray = new Mat();
+		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.medianBlur(gray, gray, 11);
+
+>>>>>>> 2e11be649b3929b5462d4a0112f80225077ef0c4
 		Mat circles = new Mat();
 		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
 		(double)gray.rows()/16, // change this value to detect circles with different distances to each other
@@ -149,13 +166,32 @@ public class Test {
 			// circle outline
 			int radius = (int) Math.round(c[2]);
 			Imgproc.circle(src, center, radius, new Scalar(255,0,255), 3, 8, 0 );
+			points.add(center);
 		}
+		System.out.println(stringList(points));
+
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
+<<<<<<< HEAD
 	
 		
 		
 		System.out.println("Done!");
 		System.exit(0);
+=======
+	
+	
+	}
+	
+	private static <T> String stringList(List<T> list)
+	{
+		String re = "";
+		for(T name : list)
+		{
+			re += name.toString();
+			re+= "\n";
+		}
+		return re;
+>>>>>>> 2e11be649b3929b5462d4a0112f80225077ef0c4
 	}
 }
