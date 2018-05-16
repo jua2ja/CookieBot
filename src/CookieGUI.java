@@ -38,12 +38,11 @@ public class CookieGUI extends JFrame implements ActionListener{
 
 		try {GlobalScreen.registerNativeHook();}
 		catch(NativeHookException ex)
-		{System.exit(1);}
+		{System.out.println("critical error");System.exit(1);}
 		GlobalScreen.addNativeKeyListener(new ExitCondition());
 		
 		initDisplay();
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);		
 	}
 	
 	/**This just sets visibility to true, allowing the user to start the robot. */
@@ -82,27 +81,23 @@ public class CookieGUI extends JFrame implements ActionListener{
 		panel.setVisible(true);
 	}
 	
+	public boolean isRunning()
+	{
+		if(!isVisible())
+			return true;
+		return false;
+	}
+	
 	/** Checks when the start button is clicked and starts the bot when it is*/
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource().equals(startButton))
 		{
-			setVisible(false);			
+			setVisible(false);
+			
 		}
 	}
-	
-	
-/*	
-I wanted to see what Robot sees.
-	public void addImage(BufferedImage image)
-	{
-		JLabel img = new JLabel(new ImageIcon(image));
-		System.out.println(img.getHeight() + " " + img.getWidth());
-		img.setBounds(0, 0, image.getWidth(), image.getHeight());
-		panel.add(img);
-	}
-*/
-	
+		
 	private class ExitCondition implements NativeKeyListener
 	{
 

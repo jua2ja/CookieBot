@@ -21,17 +21,13 @@ package src;
 
 
 import java.awt.AWTException;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +46,6 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import boofcv.gui.image.ShowImages;
 
 
 
@@ -62,23 +57,23 @@ public class Test {
 
 	public static BufferedImage findColors(BufferedImage image, Color find, double threshhold)
 	{
-	//BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-	BufferedImage result = image;
-	for(int i = 0; i < image.getHeight(); i++)
-		for(int j = 0; j < image.getWidth(); j++)
-		{
-		if(colorDistance(new Color (image.getRGB(j, i)), find) < threshhold)
-			result.setRGB(j, i, -16777216);
-		else
-			result.setRGB(j, i, -1);
-		}
-	return result;
+//		BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		BufferedImage result = image;
+		for(int i = 0; i < image.getHeight(); i++)
+			for(int j = 0; j < image.getWidth(); j++)
+			{
+			if(colorDistance(new Color (image.getRGB(j, i)), find) < threshhold)
+				result.setRGB(j, i, -16777216);
+			else
+				result.setRGB(j, i, -1);
+			}
+		return result;
 	}
 	
 	
 	private static double colorDistance (Color check, Color target)
 	{
-	return Math.sqrt(((check.getRed() - target.getRed()) * (check.getRed() - target.getRed())) + ((check.getGreen() - target.getGreen()) * (check.getGreen() - target.getGreen())) + ((check.getBlue() - target.getBlue()) * (check.getBlue() - target.getBlue())));
+		return Math.sqrt(((check.getRed() - target.getRed()) * (check.getRed() - target.getRed())) + ((check.getGreen() - target.getGreen()) * (check.getGreen() - target.getGreen())) + ((check.getBlue() - target.getBlue()) * (check.getBlue() - target.getBlue())));
 	}
 	
 	public static BufferedImage getScreen()
@@ -118,21 +113,35 @@ public class Test {
 	}
 
 	public static Mat BufferedImage2Mat(BufferedImage image) {
-	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-	try {
-		ImageIO.write(image, "jpg", byteArrayOutputStream);
-	byteArrayOutputStream.flush();
-	return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	System.out.println("critical error");
-	return null;
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, "jpg", byteArrayOutputStream);
+		byteArrayOutputStream.flush();
+		return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("critical error");
+		return null;
 	}
 
 	
 	public static void main( String args[] ) {
+<<<<<<< HEAD
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
+	
+		BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
+	//	BufferedImage result = getScreen();
+		Mat src = BufferedImage2Mat(result);
+	//	ShowImages.showWindow(matToBufferedImage(image), "test");
+		
+		
+		Mat gray = new Mat();
+		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.medianBlur(gray, gray, 11);
+	
+=======
 	List<Point> points = new ArrayList<Point>();
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
 	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 34); //buycolor
@@ -143,6 +152,7 @@ public class Test {
 		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
 		Imgproc.medianBlur(gray, gray, 5);
 
+>>>>>>> 2e11be649b3929b5462d4a0112f80225077ef0c4
 		Mat circles = new Mat();
 		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
 		(double)gray.rows()/16, // change this value to detect circles with different distances to each other
@@ -162,6 +172,13 @@ public class Test {
 
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
+<<<<<<< HEAD
+	
+		
+		
+		System.out.println("Done!");
+		System.exit(0);
+=======
 	
 	
 	}
@@ -175,5 +192,6 @@ public class Test {
 			re+= "\n";
 		}
 		return re;
+>>>>>>> 2e11be649b3929b5462d4a0112f80225077ef0c4
 	}
 }
