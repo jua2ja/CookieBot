@@ -135,13 +135,13 @@ public class Test {
 	public static void main( String args[] ) {
 	List<Point> points = new ArrayList<Point>();
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
-	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 120);
+	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 34); //buycolor
 //	BufferedImage result = getScreen();
 	Mat src = BufferedImage2Mat(result);
 //	ShowImages.showWindow(matToBufferedImage(image), "test");
 		Mat gray = new Mat();
 		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
-		Imgproc.medianBlur(gray, gray, 11);
+		Imgproc.medianBlur(gray, gray, 5);
 
 		Mat circles = new Mat();
 		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
