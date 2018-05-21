@@ -34,6 +34,7 @@ import java.awt.image.DataBufferInt;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,12 +42,15 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.opencv.core.Core;
+import org.opencv.core.Core.MinMaxLocResult;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
+
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -58,7 +62,7 @@ public class Test {
 
 	private final static Color COOKIECOLOR = new Color(201, 159, 111);
 	private final static Color CHIPCOLOR = new Color(107, 79, 68);
-	private final static Color BUYCOLOR = new Color(143, 140, 122);
+	private final static Color BUYCOLOR = new Color(168, 194, 207);
 
 	public static BufferedImage findColors(BufferedImage image, Color find, double threshhold)
 	{
@@ -162,6 +166,16 @@ public class Test {
 
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
+		
+		/*
+		Mat srcBuy = BufferedImage2Mat(result);
+		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
+		Mat distance = new Mat();
+		Mat mask = new Mat();
+		Imgproc.matchTemplate(srcBuy, template, distance, Imgproc.THRESH_BINARY);
+		Imgproc.threshold(distance, distance, 0.5, 1.0, Imgproc.THRESH_TOZERO);
+		MinMaxLocResult mmr = Core.minMaxLoc(distance);
+		
 	/*
 		BufferedImage resultBuy = findColors(getScreen(), BUYCOLOR, 34); //buycolor
 //		BufferedImage result = getScreen();
