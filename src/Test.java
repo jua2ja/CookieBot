@@ -162,7 +162,7 @@ public class Test {
 
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
-	
+	/*
 		BufferedImage resultBuy = findColors(getScreen(), BUYCOLOR, 34); //buycolor
 //		BufferedImage result = getScreen();
 		Mat srcBuy = BufferedImage2Mat(resultBuy);
@@ -191,7 +191,7 @@ public class Test {
 
 			HighGui.imshow("detected circles", src);
 			HighGui.waitKey();
-	
+	*/
 	}
 	
 	private static <T> String stringList(List<T> list)
