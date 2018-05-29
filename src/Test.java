@@ -54,7 +54,7 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import boofcv.gui.image.ShowImages;
+import boofcv.gui.image.ShowImages; 
 
 
 
@@ -139,7 +139,7 @@ public class Test {
 	public static void main( String args[] ) {
 	List<Point> points = new ArrayList<Point>();
 	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
-	BufferedImage result = findColors(getScreen(), BUYCOLOR, 34);
+	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 34);
 //	BufferedImage result = getScreen();
 	Mat src = BufferedImage2Mat(result);
 //	ShowImages.showWindow(matToBufferedImage(image), "test");
@@ -167,47 +167,21 @@ public class Test {
 		HighGui.imshow("detected circles", src);
 		HighGui.waitKey();
 		
-		/*
-		Mat srcBuy = BufferedImage2Mat(result);
+		
+		Mat screen = BufferedImage2Mat(result);
 		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
-		int[] cols = img.cols() - template.cols() + 1;
-		int[] rows = img.rows() - template.rows() + 1;
-		Mat resultTemplate = new Mat(rows, cols, Cvtype.CV_32FC1);
-		Imgproc.matchTemplate(srcBuy, template, resultTemplate, Imgproc.THRESH_BINARY);
-		MinMaxLocResult mmr = Core.minMaxLoc(distance);
-		*/
+		int cols = screen.cols() - template.cols() + 1;
+		int rows = screen.rows() - template.rows() + 1;
+		Mat resultTemplate = new Mat(rows, cols, CvType.CV_32FC1);
+		Imgproc.matchTemplate(screen, template, resultTemplate, Imgproc.TM_CCOEFF);
+		Core.normalize(resultTemplate, resultTemplate);
+		MinMaxLocResult mmr = Core.minMaxLoc(resultTemplate);
+		Point building = mmr.maxLoc;
+		Imgproc.rectangle(screen, building, new Point(building.x + 
+				template.cols(), building.y + template.rows()), new Scalar(0, 255, 0));
+		HighGui.imshow("detected building", screen);
+		HighGui.waitKey();
 		
-		
-	/*
-		BufferedImage resultBuy = findColors(getScreen(), BUYCOLOR, 34); //buycolor
-//		BufferedImage result = getScreen();
-		Mat srcBuy = BufferedImage2Mat(resultBuy);
-//		ShowImages.showWindow(matToBufferedImage(image), "test");
-			Mat grayBuy = new Mat();
-			ArrayList<Mat> lines = new ArrayList<Mat>();
-			Imgproc.cvtColor(srcBuy, grayBuy, Imgproc.COLOR_BGR2GRAY);
-			Imgproc.medianBlur(grayBuy, grayBuy, 5);
-
-			Mat rectangles = new Mat();
-			Imgproc.HoughCircles(grayBuy, rectangles, Imgproc.HOUGH_GRADIENT, 1.0,
-			(double)grayBuy.rows()/16, // change this value to detect circles with different distances to each other
-			100.0, 30.0, 50, 200); // change the last two parameters
-			// (min_radius & max_radius) to detect larger circles
-			for (int x = 0; x < rectangles.cols(); x++) {
-				double[] c = rectangles.get(0, x);
-				Point center = new Point(Math.round(c[0]), Math.round(c[1]));
-				// circle center
-				Imgproc.circle(srcBuy, center, 1, new Scalar(0,100,100), 3, 8, 0 );
-				// circle outline
-				int radius = (int) Math.round(c[2]);
-				Imgproc.circle(src, center, radius, new Scalar(255,0,255), 3, 8, 0 );
-				points.add(center);
-			}
-			System.out.println(stringList(points));
-
-			HighGui.imshow("detected circles", src);
-			HighGui.waitKey();
-	*/
 	}
 	
 	private static <T> String stringList(List<T> list)
