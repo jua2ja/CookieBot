@@ -170,11 +170,13 @@ public class Test {
 		/*
 		Mat srcBuy = BufferedImage2Mat(result);
 		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
-		Mat distance = new Mat();
-		Mat mask = new Mat();
-		Imgproc.matchTemplate(srcBuy, template, distance, Imgproc.THRESH_BINARY);
-		Imgproc.threshold(distance, distance, 0.5, 1.0, Imgproc.THRESH_TOZERO);
+		int[] cols = img.cols() - template.cols() + 1;
+		int[] rows = img.rows() - template.rows() + 1;
+		Mat resultTemplate = new Mat(rows, cols, Cvtype.CV_32FC1);
+		Imgproc.matchTemplate(srcBuy, template, resultTemplate, Imgproc.THRESH_BINARY);
 		MinMaxLocResult mmr = Core.minMaxLoc(distance);
+		*/
+		
 		
 	/*
 		BufferedImage resultBuy = findColors(getScreen(), BUYCOLOR, 34); //buycolor

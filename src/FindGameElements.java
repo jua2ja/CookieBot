@@ -52,14 +52,10 @@ public class FindGameElements {
 		this.image = bufferedImageToMat(FindGameElements.getScreen());
 	}
 	
-<<<<<<< HEAD
 	public void setImage(BufferedImage image)
 	{
 		this.image = bufferedImageToMat(image);
 	}
-
-=======
->>>>>>> 2e11be649b3929b5462d4a0112f80225077ef0c4
 	/**
 	 * displays the picture that is contained in FindGameElements
 	 */
