@@ -164,19 +164,19 @@ public class Test {
 		}
 		System.out.println(stringList(points));
 
-		HighGui.imshow("detected circles", src);
-		HighGui.waitKey();
+		//HighGui.imshow("detected circles", src);
+		//HighGui.waitKey();
 		
 		
-		Mat screen = BufferedImage2Mat(result);
+		Mat screen = BufferedImage2Mat((BufferedImage) getScreen());
 		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
 		int cols = screen.cols() - template.cols() + 1;
 		int rows = screen.rows() - template.rows() + 1;
 		Mat resultTemplate = new Mat(rows, cols, CvType.CV_32FC1);
-		Imgproc.matchTemplate(screen, template, resultTemplate, Imgproc.TM_CCOEFF);
-		Core.normalize(resultTemplate, resultTemplate);
+		Imgproc.matchTemplate(screen, template, resultTemplate, Imgproc.TM_SQDIFF_NORMED);
+		Core.normalize(resultTemplate, resultTemplate, 0, 1, Core.NORM_MINMAX, -1, new Mat());
 		MinMaxLocResult mmr = Core.minMaxLoc(resultTemplate);
-		Point building = mmr.maxLoc;
+		Point building = mmr.minLoc;
 		Imgproc.rectangle(screen, building, new Point(building.x + 
 				template.cols(), building.y + template.rows()), new Scalar(0, 255, 0));
 		HighGui.imshow("detected building", screen);
