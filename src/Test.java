@@ -168,6 +168,9 @@ public class Test {
 		//HighGui.waitKey();
 		
 		
+		
+		
+		
 		Mat screen = BufferedImage2Mat((BufferedImage) getScreen());
 		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
 		int cols = screen.cols() - template.cols() + 1;
@@ -180,7 +183,8 @@ public class Test {
 		Imgproc.rectangle(screen, building, new Point(building.x + 
 				template.cols(), building.y + template.rows()), new Scalar(0, 255, 0));
 		HighGui.imshow("detected building", screen);
-		HighGui.waitKey();
+		HighGui.waitKey(); //building button height is either 95 or 96 pixels
+		System.out.println(building.x + " " + building.y);
 		
 	}
 	
