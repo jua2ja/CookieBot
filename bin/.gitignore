@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /CookieGUI$1.class
 /CookieGUI$2.class
 /CookieGUI$ExitCondition.class
@@ -5,3 +6,17 @@
 /FindGameElements.class
 /Main.class
 /Test.class
+=======
+/.classpath
+/.gitattributes
+/.project
+/.settings/
+/dark buy.JPG
+/data/
+/examples/
+/integration/
+/libs/
+/main/
+/saved_image000.png
+/src/
+>>>>>>> experimentations-with-hough-transform

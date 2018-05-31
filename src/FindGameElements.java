@@ -1,3 +1,5 @@
+package src;
+
 import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,7 +9,18 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
@@ -22,85 +35,86 @@ import boofcv.struct.image.GrayF32;
 
 public class FindGameElements {
 	
-	GrayF32 desktop;
-	String directory = UtilIO.pathExample("cookies");
 	
-	/** Initializes most of the necessary variables for the computer to see the screen
-	 *  Main purpose of this constructor is to take a screenshot and store it into a Mat, used in opencv
-	 *  If anything fails along the way, terminates the program. Program can't run without a picture
-	 */
-	public FindGameElements() {
-		//declaring temporary variables. These will not be necessary in the future so left in constructor
-		//most variables declared with items from the screen
-		BufferedImage screenPicture;
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
-		GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
-		Robot screenDeviceShot = null;
-		//standard screenshot taking with java.awt.Robot
-		try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {System.exit(1);}
-		screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
-		
+	private final static Color COOKIECOLOR = new Color(201, 159, 111); //kind of useless
+	private final static Color CHIPCOLOR = new Color(107, 79, 68); //for finding cookies
+	private final static Color BUYCOLOR = new Color(143, 140, 132); //for finding buildings
+
+	private Mat image;
+	
+	/** Adds the image to the class, class is image specific to allow for more experimentation*/
+	public FindGameElements(BufferedImage image) {
+		this.image = bufferedImageToMat(image);
 	}	
-	
-	public void displayImage()
-	{
-		ShowImages.showWindow(desktop, "Desktop",true);
+
+	/** default constructor for FindGameElements, uses a screenshot */
+	public FindGameElements() {
+		this.image = bufferedImageToMat(FindGameElements.getScreen());
 	}
 	
-	public void findCookie()
+	public void setImage(BufferedImage image)
 	{
-		BufferedImage output = new BufferedImage(desktop.width, desktop.height, BufferedImage.TYPE_INT_BGR);
-		ConvertBufferedImage.convertTo(desktop, output);
-		Graphics2D g2 = output.createGraphics();
-		GrayF32 templateCookie = UtilImageIO.loadImage(directory , "cookie.jpg", GrayF32.class);
-		//FAILS TO LOAD TEMPLATE COOKIE!!!!!
-		g2.setColor(Color.BLUE); g2.setStroke(new BasicStroke(2));
-		drawRectangles(g2, templateCookie, null, 1);
-		ShowImages.showWindow(output, "Found Matches",true);
+		this.image = bufferedImageToMat(image);
+	}
+	/**
+	 * displays the picture that is contained in FindGameElements
+	 */
+	public void display()
+	{
+		HighGui.destroyAllWindows();
+		HighGui.imshow("display image", image);
+		HighGui.waitKey();
+	}
+	
+	/*
+	 * A collection of static functions used for general utilities unrelated to the image. 
+	 */
+	
+	/**
+	 * A static method that uses the standard AWT method to take a picture of the screen using java.awt.Robot
+	 * @return a BufferdImage format picture of the screen
+	 */
+	public static BufferedImage getScreen()
+	{
+	BufferedImage screenPicture;
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
+	GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
+	Robot screenDeviceShot = null;
+	//standard screenshot taking with java.awt.Robot
+	try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {return null;}
+	screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
+
+	return screenPicture;
+	}
+
+	
+	/**
+	 * A helper static method that calculates the euclidean distance between two Color objects
+	 * @param check a color in an image 
+	 * @param target a predetermined color that has itself compared to check
+	 * @return the euclidean distance between the two colors, calculated by the usual formula of the square roots of the sum of the squares of the distances
+	 */
+	private static double colorDistance (Color check, Color target)
+	{
+		return Math.sqrt(((check.getRed() - target.getRed()) * (check.getRed() - target.getRed())) + ((check.getGreen() - target.getGreen()) * (check.getGreen() - target.getGreen())) + ((check.getBlue() - target.getBlue()) * (check.getBlue() - target.getBlue())));
 	}
 
 	/**
-	 * Helper function will is finds matches and displays the results as colored rectangles
+	 * A helper static method that converts a BufferdImage object to a Mat object
+	 * @param image a valid BufferedImage object with a height and width of at least 1. 
+	 * @return a Mat object that has the contents of image
 	 */
-	private void drawRectangles(Graphics2D g2, GrayF32 template, GrayF32 mask, int expectedMatches) {
-		List<Match> found = findMatches(template, mask, expectedMatches);
-
-		int r = 2;
-		int w = template.width + 2 * r;
-		int h = template.height + 2 * r;
-
-		for (Match m : found) {
-			System.out.println("Match "+m.x+" "+m.y+"    score "+m.score);
-			// this demonstrates how to filter out false positives
-			// the meaning of score will depend on the template technique
-//			if( m.score < -1000 )  // This line is commented out for demonstration purposes
-//				continue;
-
-			// the return point is the template's top left corner
-			int x0 = m.x - r;
-			int y0 = m.y - r;
-			int x1 = x0 + w;
-			int y1 = y0 + h;
-
-			g2.drawLine(x0, y0, x1, y0);
-			g2.drawLine(x1, y0, x1, y1);
-			g2.drawLine(x1, y1, x0, y1);
-			g2.drawLine(x0, y1, x0, y0);
-		}
+	public static Mat bufferedImageToMat(BufferedImage image) 
+	{
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, "jpg", byteArrayOutputStream);
+		byteArrayOutputStream.flush();
+		return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+		} catch (IOException e) {e.printStackTrace();}
+		return null;
 	}
+
 	
-	private List<Match> findMatches(GrayF32 template, GrayF32 mask, int expectedMatches) {
-		// create template matcher.
-		TemplateMatching<GrayF32> matcher = 
-				FactoryTemplateMatching.createMatcher(TemplateScoreType.SUM_DIFF_SQ, GrayF32.class);
-		
-		// Find the points which match the template the best
-		matcher.setImage(desktop);
-		matcher.setTemplate(template, mask,expectedMatches);
-		matcher.process();
-		return matcher.getResults().toList();
-}
-	
-	public GrayF32 getDesktop(){return desktop;}		
 }

@@ -1,3 +1,4 @@
+package src;
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
@@ -7,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +18,7 @@
  */
 
 
+<<<<<<< HEAD
 import boofcv.abst.feature.detdesc.DetectDescribePoint;
 import boofcv.abst.feature.detect.extract.ConfigExtract;
 import boofcv.abst.feature.detect.extract.NonMaxSuppression;
@@ -42,6 +44,9 @@ import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.ImageGray;
 import boofcv.core.image;
 import georegression.struct.shapes.EllipseRotated_F64;
+=======
+
+>>>>>>> experimentations-with-hough-transform
 
 import java.awt.AWTException;
 import java.awt.BasicStroke;
@@ -52,145 +57,169 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Example of how to use SURF detector and descriptors in BoofCV. 
- * 
- * @author Peter Abeles
- */
+import javax.imageio.ImageIO;
+
+import org.opencv.core.Core;
+import org.opencv.core.Core.MinMaxLocResult;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.highgui.HighGui;
+
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
+import boofcv.gui.image.ShowImages; 
+
+
+
 public class Test {
 
-	/**
-	 * Use generalized interfaces for working with SURF.  This removes much of the drudgery, but also reduces flexibility
-	 * and slightly increases memory and computational requirements.
-	 * 
-	 *  @param image Input image type. DOES NOT NEED TO BE GrayF32, GrayU8 works too
-	 */
-	public static void easy( BufferedImage imageB ) {
-		
-		GrayF32 image = ConvertBufferedImage.convertFrom(imageB,(GrayF32)null);
-		
-		// create the detector and descriptors
-		DetectDescribePoint<GrayF32,BrightFeature> surf = FactoryDetectDescribe.
-				surfStable(new ConfigFastHessian(0, 2, 200, 2, 9, 4, 4), null, null,GrayF32.class);
+	private final static Color COOKIECOLOR = new Color(201, 159, 111);
+	private final static Color CHIPCOLOR = new Color(107, 79, 68);
+	private final static Color BUYCOLOR = new Color(168, 194, 207);
 
-		 // specify the image to process
-		surf.detect(image);
-
-		System.out.println("Found Features: "+surf.getNumberOfFeatures());
-		Graphics2D g2 = imageB.createGraphics();
-		g2.setStroke(new BasicStroke(3));
-
-		double total;
-		
-		
-		for(int i = 0; i < surf.getNumberOfFeatures(); i++)
+	public static BufferedImage findColors(BufferedImage image, Color find, double threshhold)
+	{
+	//BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+	BufferedImage result = image;
+	for(int i = 0; i < image.getHeight(); i++)
+		for(int j = 0; j < image.getWidth(); j++)
 		{
-			total = 0;
-			for(int j = 0; j < surf.getDescription(i).value.length; j++)
-				total += surf.getDescription(i).value[j];
-			System.out.println(total);
-
+		if(colorDistance(new Color (image.getRGB(j, i)), find) < threshhold)
+			result.setRGB(j, i, -16777216);
+		else
+			result.setRGB(j, i, -1);
 		}
-		for(int j = 0; j < surf.getDescription(0).value.length; j++)
-			System.out.println(surf.getDescription(0).value[j]);
+	return result;
+	}
 	
-		
-		
-//		System.out.println("First descriptor's first value: "+surf.getDescription(0).value[0]);
-		for(int i = 0; i < surf.getNumberOfFeatures(); i++)
-		{
-//			System.out.println(surf.getLocation(i).x + " " + surf.getLocation(i).y);
-			total = 0;
-			for(int j = 0; j < surf.getDescription(0).value.length; j++)
-				total += surf.getDescription(0).value[j];
-//			System.out.println(total);
-			g2.setColor(new Color((int)total / 10));
-			EllipseRotated_F64 ellipse = new EllipseRotated_F64(surf.getLocation(i), surf.getRadius(i), surf.getRadius(i), surf.getRadius(i));
-			VisualizeShapes.drawEllipse(ellipse , g2);
-			}
-		ShowImages.showWindow(imageB,"Detected Ellipses",true);
+	
+	private static double colorDistance (Color check, Color target)
+	{
+	return Math.sqrt(((check.getRed() - target.getRed()) * (check.getRed() - target.getRed())) + ((check.getGreen() - target.getGreen()) * (check.getGreen() - target.getGreen())) + ((check.getBlue() - target.getBlue()) * (check.getBlue() - target.getBlue())));
+	}
+	
+	public static BufferedImage getScreen()
+	{
+	BufferedImage screenPicture;
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
+	GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
+	Robot screenDeviceShot = null;
+	//standard screenshot taking with java.awt.Robot
+	try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {System.exit(1);}
+	screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
 
+	return screenPicture;
+	}
+	
+	public static Mat bufferedImageToMat(BufferedImage bi) {
+	Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
+	byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+	mat.put(0, 0, data);
+	return mat;
+	}
+	
+	
+	public static BufferedImage matToBufferedImage(Mat rgba)
+	{
+	Imgproc.cvtColor(rgba, rgba, Imgproc.COLOR_RGB2GRAY, 0);
+
+	// Create an empty image in matching format
+	BufferedImage gray = new BufferedImage(rgba.width(), rgba.height(), BufferedImage.TYPE_BYTE_GRAY);
+
+	// Get the BufferedImage's backing array and copy the pixels directly into it
+	byte[] data = ((DataBufferByte) gray.getRaster().getDataBuffer()).getData();
+	rgba.get(0, 0, data);
+	
+	return gray;
 	}
 
-	/**
-	 * Configured exactly the same as the easy example above, but require a lot more code and a more in depth
-	 * understanding of how SURF works and is configured.  Instead of TupleDesc_F64, SurfFeature are computed in
-	 * this case.  They are almost the same as TupleDesc_F64, but contain the Laplacian's sign which can be used
-	 * to speed up association. That is an example of how using less generalized interfaces can improve performance.
-	 * 
-	 * @param image Input image type. DOES NOT NEED TO BE GrayF32, GrayU8 works too
-	 */
-	public static <II extends ImageGray<II>> void harder(GrayF32 image ) {
-		// SURF works off of integral images
-		Class<II> integralType = GIntegralImageOps.getIntegralType(GrayF32.class);
-		
-		// define the feature detection algorithm
-		NonMaxSuppression extractor =
-				FactoryFeatureExtractor.nonmax(new ConfigExtract(2, 0, 5, true));
-		FastHessianFeatureDetector<II> detector =
-				new FastHessianFeatureDetector<>(extractor, 200, 2, 9, 4, 4, 6);
-
-		// estimate orientation
-		OrientationIntegral<II> orientation = 
-				FactoryOrientationAlgs.sliding_ii(null, integralType);
-
-		DescribePointSurf<II> descriptor = FactoryDescribePointAlgs.<II>surfStability(null,integralType);
-		
-		// compute the integral image of 'image'
-		II integral = GeneralizedImageOps.createSingleBand(integralType,image.width,image.height);
-		GIntegralImageOps.transform(image, integral);
-
-		// detect fast hessian features
-		detector.detect(integral);
-		// tell algorithms which image to process
-		orientation.setImage(integral);
-		descriptor.setImage(integral);
-
-		List<ScalePoint> points = detector.getFoundPoints();
-
-		List<BrightFeature> descriptions = new ArrayList<>();
-
-		for( ScalePoint p : points ) {
-			// estimate orientation
-			orientation.setObjectRadius( p.scale*BoofDefaults.SURF_SCALE_TO_RADIUS);
-			double angle = orientation.compute(p.x,p.y);
-			
-			// extract the SURF description for this region
-			BrightFeature desc = descriptor.createDescription();
-			descriptor.describe(p.x,p.y,angle,p.scale,desc);
-
-			// save everything for processing later on
-			descriptions.add(desc);
-		}
-		
-		System.out.println("Found Features: "+points.size());
-		System.out.println("First descriptor's first value: "+descriptions.get(0).value[0]);
+	public static Mat BufferedImage2Mat(BufferedImage image) {
+	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	try {
+		ImageIO.write(image, "jpg", byteArrayOutputStream);
+	byteArrayOutputStream.flush();
+	return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	System.out.println("critical error");
+	return null;
 	}
 
+	
 	public static void main( String args[] ) {
+	List<Point> points = new ArrayList<Point>();
+	System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
+	BufferedImage result = findColors(getScreen(), CHIPCOLOR, 34);
+//	BufferedImage result = getScreen();
+	Mat src = BufferedImage2Mat(result);
+//	ShowImages.showWindow(matToBufferedImage(image), "test");
+		Mat gray = new Mat();
+		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.medianBlur(gray, gray, 5);
+
+		Mat circles = new Mat();
+		Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
+		(double)gray.rows()/16, // change this value to detect circles with different distances to each other
+		100.0, 30.0, 50, 200); // change the last two parameters
+		// (min_radius & max_radius) to detect larger circles
+		for (int x = 0; x < circles.cols(); x++) {
+			double[] c = circles.get(0, x);
+			Point center = new Point(Math.round(c[0]), Math.round(c[1]));
+			// circle center
+			Imgproc.circle(src, center, 1, new Scalar(0,100,100), 3, 8, 0 );
+			// circle outline
+			int radius = (int) Math.round(c[2]);
+			Imgproc.circle(src, center, radius, new Scalar(255,0,255), 3, 8, 0 );
+			points.add(center);
+		}
+		System.out.println(stringList(points));
+
+		//HighGui.imshow("detected circles", src);
+		//HighGui.waitKey();
 		
-		BufferedImage cookie = UtilImageIO.loadImage(UtilIO.pathExample("cookies/PerfectCookie.jpg"));
-		BufferedImage cookieB = UtilImageIO.loadImage(UtilIO.pathExample("cookies/BackgroundCookie.png"));		
 		
-		BufferedImage screenPicture;
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice screenDevice = ge.getDefaultScreenDevice();
-		GraphicsConfiguration gc = screenDevice.getDefaultConfiguration();
-		Robot screenDeviceShot = null;
-		//standard screenshot taking with java.awt.Robot
-		try {screenDeviceShot = new Robot(screenDevice);} catch (AWTException e) {System.exit(1);}
-		screenPicture = screenDeviceShot.createScreenCapture(gc.getBounds());
+		Mat screen = BufferedImage2Mat((BufferedImage) getScreen());
+		Mat template = Imgcodecs.imread("C:\\Users\\Costl\\Documents\\GitHub\\CookieBot\\dark buy.JPG"); //change based on computer used
+		int cols = screen.cols() - template.cols() + 1;
+		int rows = screen.rows() - template.rows() + 1;
+		Mat resultTemplate = new Mat(rows, cols, CvType.CV_32FC1);
+		Imgproc.matchTemplate(screen, template, resultTemplate, Imgproc.TM_SQDIFF_NORMED);
+		Core.normalize(resultTemplate, resultTemplate, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+		MinMaxLocResult mmr = Core.minMaxLoc(resultTemplate);
+		Point building = mmr.minLoc;
+		Imgproc.rectangle(screen, building, new Point(building.x + 
+				template.cols(), building.y + template.rows()), new Scalar(0, 255, 0));
+		HighGui.imshow("detected building", screen);
+		HighGui.waitKey();
 		
-		
-		// run each example
-//		Test.easy(cookie);
-		Test.easy(cookieB);
-		Test.easy(screenPicture);
-		
-		System.out.println("Done!");
-		
+	}
+	
+	private static <T> String stringList(List<T> list)
+	{
+		String re = "";
+		for(T name : list)
+		{
+			re += name.toString();
+			re+= "\n";
+		}
+		return re;
 	}
 }
