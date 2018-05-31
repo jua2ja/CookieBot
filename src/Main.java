@@ -1,4 +1,3 @@
-package src;
 
 import java.awt.Robot;
 import java.util.concurrent.TimeUnit;

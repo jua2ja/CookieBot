@@ -1,4 +1,3 @@
-package src;
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
@@ -18,7 +17,6 @@ package src;
  */
 
 
-<<<<<<< HEAD
 import boofcv.abst.feature.detdesc.DetectDescribePoint;
 import boofcv.abst.feature.detect.extract.ConfigExtract;
 import boofcv.abst.feature.detect.extract.NonMaxSuppression;
@@ -42,11 +40,7 @@ import boofcv.struct.feature.BrightFeature;
 import boofcv.struct.feature.ScalePoint;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.ImageGray;
-import boofcv.core.image;
 import georegression.struct.shapes.EllipseRotated_F64;
-=======
-
->>>>>>> experimentations-with-hough-transform
 
 import java.awt.AWTException;
 import java.awt.BasicStroke;

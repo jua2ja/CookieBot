@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/BoofCV"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jnativehook"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv341"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/boofcv"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jnativehook"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
