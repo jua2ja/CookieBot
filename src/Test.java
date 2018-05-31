@@ -1,4 +1,5 @@
 package src;
+
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
@@ -17,8 +18,6 @@ package src;
  * limitations under the License.
  */
 
-
-<<<<<<< HEAD
 import boofcv.abst.feature.detdesc.DetectDescribePoint;
 import boofcv.abst.feature.detect.extract.ConfigExtract;
 import boofcv.abst.feature.detect.extract.NonMaxSuppression;
