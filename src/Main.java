@@ -12,8 +12,8 @@ public class Main {
 		boolean running = false;
 		CookieGUI gui = new CookieGUI();
 		FindGameElements find = new FindGameElements(); //uses the default constrctor that takes a picture of the current screen
+		logic gameLogic = new logic();
 		gui.displayBot();
-		
 		//waits until button is clicked to start robot
 		while(!running)
 		{
