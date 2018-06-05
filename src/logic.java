@@ -6,7 +6,7 @@ public class logic {
 	private int clickingEfficiency = 10;
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
-	private double[] buildingCPS = {0.1, 0.5, 2, 10, 40, 100, 400, 1000, 4000, 10000}; //only verified first 7
+	private double[] buildingCPS = {0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 0}; //only verified first 8
 	/*private int cookieTypes1 = 0;
 	private int cookieTypes2 = 0;
 	private int cookieTypes3 = 0;
