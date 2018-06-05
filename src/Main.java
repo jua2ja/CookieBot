@@ -130,7 +130,7 @@ public class Main {
 		try {
 			TimeUnit.MILLISECONDS.sleep(5);
 		} catch (InterruptedException e) {
-			System.out.println("Failed to sleep for a millisecond... this should never happen");
+			System.out.println("Failed to sleep for a millisecond...  this should never happen");
 		}
 	}
 	
