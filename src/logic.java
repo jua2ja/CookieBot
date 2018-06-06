@@ -25,8 +25,8 @@ public class Logic {
 		CPS += clickingEfficiency;
 		int[] bestBuys = new int[8];
 		for(int a = 0; a < 8; a++) bestBuys[a] = 0;
-		bestBuys = testAllBuys(cookies, CPS, bestBuys);
-		cookiesCreated = 0;
+//		bestBuys = testAllBuys(cookies, CPS, bestBuys);
+//		cookiesCreated = 0;
 		return bestBuys;
 	}
 	
@@ -53,8 +53,8 @@ public class Logic {
 	
 	public static int[] testAllBuys(long cookies, double CPS, int[] buysSoFar, long additionalCookiesCreated, double timeLeft, int biggestBuy) {
 		int[] buys = buysSoFar;
-		int[] additionalCookiesCreated = new int[8];
-		return ;
+//		int[] additionalCookiesCreated = new int[8];
+		return buys; // put temporarily so I can run other stuff
 	}
 	
 }
