@@ -169,7 +169,5 @@ public class Main {
 		mouse.mouseRelease(InputEvent.BUTTON1_MASK);
 	}
 	
-	
-	
-		
+
 }
