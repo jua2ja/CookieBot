@@ -46,6 +46,7 @@ public class Main {
 		
 		//actual bot starts here
 		FindGameElements find = new FindGameElements(); //uses the default constrctor that takes a picture of the current screen
+		Logic logic = new Logic();
 		boolean again = true;
 		int count = 0;
 
@@ -155,8 +156,7 @@ public class Main {
 //			System.out.println(MouseInfo.getPointerInfo().getLocation().getX() + " , "
 //			        + MouseInfo.getPointerInfo().getLocation().getY());
 		}while(!(MouseInfo.getPointerInfo().getLocation().getX() - location.x < 20 && MouseInfo.getPointerInfo().getLocation().getX() - location.x > -20 && MouseInfo.getPointerInfo().getLocation().getY() - location.y < 20 && MouseInfo.getPointerInfo().getLocation().getY() - location.y > -20));
-		mouse.mousePress(InputEvent.BUTTON1_MASK);
-		mouse.mouseRelease(InputEvent.BUTTON1_MASK);
+		click(mouse);
 	}
 	
 	/**
