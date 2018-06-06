@@ -1,11 +1,10 @@
-package src;
 
 import java.util.ArrayList;
 
-public class logic {
+public class Logic {
 
 	private double CPS = 0;
-	private int clickingEfficiency = 10;
+	private final int clickingEfficiency = 10;
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
 	private double[] buildingCPS = {0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 999999}; //only verified first 8
@@ -15,7 +14,7 @@ public class logic {
 	private int catUpgrades = 0;
 	private double milkPercent = 0; //for milk since it increases CPS, increased by 4% per achievement unlocked
 	*/
-	public logic() {
+	public Logic() {
 		
 	}
 	

@@ -34,16 +34,9 @@ public class Main {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME );
 		boolean running = false;
 		CookieGUI gui = new CookieGUI();
-<<<<<<< HEAD
 		gui.displayBot();
 		
 		//waits until button is clicked to start robot. Does no initialize until clicked
-=======
-		FindGameElements find = new FindGameElements(); //uses the default constrctor that takes a picture of the current screen
-		logic gameLogic = new logic();
-		gui.displayBot();
-		//waits until button is clicked to start robot
->>>>>>> 52cb6c7101372a89679b4df95e29372d4e3e2304
 		while(!running)
 		{
 			try {TimeUnit.SECONDS.sleep(1);
