@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 public class logic {
 
 	private double CPS = 0;
@@ -10,26 +12,23 @@ public class logic {
 	/*private int cookieTypes1 = 0;
 	private int cookieTypes2 = 0;
 	private int cookieTypes3 = 0;
-	private int catUpgrades = 0;*/
+	private int catUpgrades = 0;
 	private double milkPercent = 0; //for milk since it increases CPS, increased by 4% per achievement unlocked
-	
+	*/
 	public logic() {
 		
 	}
 	
-	public int decideBuy(long cookies) {
+	public int[] decideBuy(long cookies) {
 		for(int a = 0; a < 10; a++) {
 			CPS += buildingCPS[a]*buildingCount[a];
 		}
 		CPS += clickingEfficiency;
-		int bestBuy = 0;
-		double timeTillBuy = calcTimeTillBuy(0, cookies);
-		for(int a = 1; a < 10; a++) { //chooses the buy with the best gains 5 minutes from now
-			if((300-calcTimeTillBuy(bestBuy, cookies))*buildingCPS[bestBuy] < ((300-calcTimeTillBuy(a, cookies)))*buildingCPS[a]) {
-				bestBuy = a;
-			}
-		}
-		return bestBuy;
+		int[] bestBuys = new int[8];
+		for(int a = 0; a < 8; a++) bestBuys[a] = 0;
+		bestBuys = testAllBuys(cookies, CPS, bestBuys);
+		cookiesCreated = 0;
+		return bestBuys;
 	}
 	
 	public void buy(int whichBuilding) {
@@ -37,12 +36,26 @@ public class logic {
 		buildingCount[whichBuilding]++;
 	}
 	
-	private double calcTimeTillBuy(int whichBuilding, long cookies){
+	private double calcTimeTillBuy(int whichBuilding, long cookies) {
 		double timeTillBuy = (buildingCosts[whichBuilding] - cookies)/CPS;
-		if(timeTillBuy < 0) {
-			timeTillBuy = 0;
-		}
+		if(timeTillBuy < 0) timeTillBuy = 0;
 		return timeTillBuy;
 	}
 
+	/*
+	 Plan:
+	 method decideBuy runs the first testAllBuys
+	 testAllBuys takes in the time left, the current cookies, the cookies per second, what has been bought so far, 
+	 	the biggest buy and the cookies created through this strategy.
+	 testAllBuys recurses by having a for loop which has it attempt to buy each building of equal or higher CPS than those bought before and run a new testAllBuys
+	 This is because there is no situation in which a cheaper thing to buy would be better to buy after a more expensive one
+	 testAllBuys returns the buys so far when there are no other possible buys within the time
+	 */
+	
+	public static int[] testAllBuys(long cookies, double CPS, int[] buysSoFar, long additionalCookiesCreated, double timeLeft, int biggestBuy) {
+		int[] buys = buysSoFar;
+		int[] additionalCookiesCreated = new int[8];
+		return ;
+	}
+	
 }
