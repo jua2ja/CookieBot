@@ -6,7 +6,7 @@ import net.sourceforge.tess4j.*;
 public class TestReading {
     public static void main(String[] args) {
     	
-    	
+    	System.loadLibrary("libtesseract3051");
         File image = new File("C:\\bin\\Tess4J\\test\\resources\\test-data\\eurotext.tif");
         System.out.println(image.exists());
         Tesseract tessInst = new Tesseract();
