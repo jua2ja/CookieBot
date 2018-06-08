@@ -7,6 +7,8 @@ public class Logic {
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
 	private double[] buildingCPS = {0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 999999};
+	private ArrayList<Integer> nextBuys = new ArrayList<Integer>();
+	private ArrayList<Double> nextTimes = new ArrayList<Double>();
 	/*private int cookieTypes1 = 0;
 	private int cookieTypes2 = 0;
 	private int cookieTypes3 = 0;
@@ -62,6 +64,16 @@ public class Logic {
 	 testAllBuys returns the buys so far when there are no other possible buys within the time
 	 */
 	
+	/*
+	 New Plan:
+	 method decideBuy runs testAllBuys inputing the necessary information
+	 testAllBuys branches:
+	 	Whenever testAllBuys runs, if there are no buys available, it returns the total increase of cookies by going down this route
+	 	When there are buys available, testAllBuys branches to all possible buys within the remaining time
+	 	After the branching fully finishes, the recursion ends and totaling is done
+	 	Each iteration of testAllBuys takes in the most efficient of the testAllBuys further down the branch and then adds to the global arrayList of the best buy
+	 */
+	
 	public long testAllBuys(long cookies, double CPS, int[] buysSoFar, int[] updatedBuildingCosts, double timeLeft, int biggestBuy, long cookiesCreated) {
 		int bestNextBuy = 0; //check this whole thing, very complicated
 		boolean buyAvailable = false;
@@ -69,25 +81,31 @@ public class Logic {
 		for(int a = 0; a < 8; a++) {
 			if(mostExpensiveAvailable(timeLeft, cookies, CPS) != -1) buyAvailable = true;
 		}
-		if(buyAvailable = true) {
-			int[] upcomingBuys = buysSoFar;
-			upcomingBuys[biggestBuy]++;
+		if(buyAvailable == true) {
 			updatedBuildingCosts[biggestBuy] *= 1.15;
-			mostCookies = testAllBuys(cookies, CPS, buysSoFar, updatedBuildingCosts, timeLeft, biggestBuy, cookiesCreated);
-			for(int a = biggestBuy+1; a <= mostExpensiveAvailable(timeLeft, cookies, CPS); a++) {
+			CPS += buildingCPS[biggestBuy];
+			//mostCookies = testAllBuys(cookies, CPS, buysSoFar, updatedBuildingCosts, timeLeft, biggestBuy, cookiesCreated);
+			int mostExpensive = mostExpensiveAvailable(timeLeft, cookies, CPS);
+			for(int a = biggestBuy+1; a <= mostExpensive; a++) {
+				/*updatedBuildingCosts[a-1] /= 1.15;
 				updatedBuildingCosts[a] *= 1.15;
-				updatedBuildingCosts[a-1] /= 1.15;
-				upcomingBuys[a-1]--;
-				upcomingBuys[a]++;
+				CPS -= buildingCPS[a-1];
+				CPS += buildingCPS[a];
 				if(mostCookies < testAllBuys(cookies, CPS, buysSoFar, updatedBuildingCosts, timeLeft, biggestBuy, cookiesCreated)) {
 					mostCookies = testAllBuys(cookies, CPS, buysSoFar, updatedBuildingCosts, timeLeft, biggestBuy, cookiesCreated);
 					bestNextBuy = a;
-				}
-			}
-			timeLeft -= calcTimeTillBuy(bestNextBuy, cookies, CPS);
-			if(calcTimeTillBuy(bestNextBuy, cookies, CPS) == 0) {
+				}*/
+				
 				
 			}
+			timeLeft -= calcTimeTillBuy(bestNextBuy, cookies, CPS);
+			double time = calcTimeTillBuy(bestNextBuy, cookies, CPS);
+			if(time == 0) {
+				cookies -= updatedBuildingCosts[bestNextBuy];
+			}
+			else cookies = 0;
+			nextBuys.add(bestNextBuy);
+			nextTimes.add(time);
 		}
 		return cookiesCreated; // put temporarily so I can run other stuff
 	}
