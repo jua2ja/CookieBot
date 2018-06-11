@@ -5,6 +5,7 @@ public class Logic {
 
 	private final int clickingEfficiency = 10;
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private Building[] buildings = new Building[8];
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
 	private double[] buildingCPS = {0.1, 0.5, 2, 10, 40, 100, 400, 6666, 98765, 999999};
 	private ArrayList<Integer> nextBuys = new ArrayList<Integer>();
@@ -17,10 +18,10 @@ public class Logic {
 	*/
 	
 	public Logic() {
-		
+		for(int a = 0; a < 8; a++) {
+			buildings[a] = new Building(buildingCosts[a], buildingCPS[a], 1);
+		}
 	}
-	
-	
 	
 	public void buyMostExpensive(long cookies) {
 		double CPS = 0;
