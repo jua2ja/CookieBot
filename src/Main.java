@@ -21,10 +21,14 @@ import boofcv.gui.image.ShowImages;
 public class Main {
 
 	
-	public static final int buildingDistance = 64;
+	public static final int buildingDistance = 77;
 	public static Point cookie;
 	public static Point building;
 	public static Robot mouse;
+	public static Logic buy;
+	private static long cookies = 0;
+	private static boolean done = false;
+
 	
 	public static void main(String[] args) {
 		
@@ -46,7 +50,6 @@ public class Main {
 		
 		//actual bot starts here
 		FindGameElements find = new FindGameElements(); //uses the default constrctor that takes a picture of the current screen
-		Logic logic = new Logic();
 		boolean again = true;
 		int count = 0;
 
@@ -59,6 +62,7 @@ public class Main {
 			System.exit(1);
 		}
 
+		mouse.mouseMove(0, 0);
 		
 		//tries to find the cookie until a possible location is found.
 		cookie = null;
@@ -101,14 +105,20 @@ public class Main {
 		System.out.println(cookie.toString());
 		System.out.println(building.toString());
 		System.out.println(screen.getWidth());
+				
 		
+		Point[] positions = new Point[8];
+		positions[0] = building;
+		for(int i = 1; i < positions.length; i++)
+			positions[i] = new Point(building.x, building.y + buildingDistance * i);
 		
 		find.drawPoint(cookie);
-		find.drawPoint(building);
+		for(Point building : positions)
+			find.drawPoint(building);
 		find.display();
 		
-		
-		
+		buy = new Logic(positions);
+
 		
 		//runs main loops of the program
 		while(true)
@@ -123,13 +133,42 @@ public class Main {
 	 */
 	public static void loop()
 	{
-		if((System.currentTimeMillis() / 1000L) % 10 == 0)
+
+		if((System.currentTimeMillis() / 1000L) % 5 == 0 && done)
 		{
-			click(mouse, building);
+			if(buy.upgradeAvailable(cookies))
+			{
+				
+			}
+			else
+			{
+				cookies += (int)(buy.getCPS() * 4.75);
+				Building temp = buy.buyBestAvailable(cookies);
+				if(temp != null)
+				{
+					for(int i = 0; i < temp.maxBuys(cookies); i++)
+					{
+						click(temp.getPosition());
+						cookies -= temp.buy(1);
+					}
+					System.out.println(temp.toString() + ", you also have " + cookies  + " cookies by internal calculations");
+					System.out.println(cookies);
+					System.out.println(buy.getCPS());
+				}
+				else
+					System.out.println("no building can be bought");
+			}
+			done = false;
 		}
-		click(mouse, cookie);
+		
+		if((System.currentTimeMillis() / 1000L) % 5 == 1 && !done)
+			done = true;
+		
+		click(cookie);
+		cookies += buy.cookieValue;
+		
 		try {
-			TimeUnit.MILLISECONDS.sleep(5);
+			TimeUnit.MILLISECONDS.sleep(10);
 		} catch (InterruptedException e) {
 			System.out.println("Failed to sleep for a millisecond... this should never happen");
 		}
@@ -140,7 +179,7 @@ public class Main {
 	 * @param mouse object for the screen device that needs to be clicked
 	 * @param location location of the click WHY IS THIS BROKEN FOR HIGH X VALUES
 	 */
-	public static void click(Robot mouse, Point location)
+	public static void click(Point location)
 	{       
 		int count = 0;
 		do {
@@ -156,14 +195,14 @@ public class Main {
 //			System.out.println(MouseInfo.getPointerInfo().getLocation().getX() + " , "
 //			        + MouseInfo.getPointerInfo().getLocation().getY());
 		}while(!(MouseInfo.getPointerInfo().getLocation().getX() - location.x < 20 && MouseInfo.getPointerInfo().getLocation().getX() - location.x > -20 && MouseInfo.getPointerInfo().getLocation().getY() - location.y < 20 && MouseInfo.getPointerInfo().getLocation().getY() - location.y > -20));
-		click(mouse);
+		click();
 	}
 	
 	/**
 	 * simple clicking function
 	 * @param mouse: Robot object
 	 */
-	public static void click(Robot mouse)
+	public static void click()
 	{
 		mouse.mousePress(InputEvent.BUTTON1_MASK);
 		mouse.mouseRelease(InputEvent.BUTTON1_MASK);

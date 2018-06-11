@@ -7,10 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,23 +27,15 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import boofcv.alg.feature.detect.template.TemplateMatching;
-import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
-import boofcv.factory.feature.detect.template.TemplateScoreType;
-import boofcv.gui.image.ShowImages;
-import boofcv.io.UtilIO;
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.UtilImageIO;
-import boofcv.struct.feature.Match;
-import boofcv.struct.image.GrayF32;
 
 
 public class FindGameElements {
 	
 	
+	//different experimentations of color, only CHIPCOLOR is used
 	private final static Color COOKIECOLOR = new Color(201, 159, 111); //kind of useless
 	private final static Color CHIPCOLOR = new Color(107, 79, 68); //for finding cookies
-	private final static Color BUYCOLOR = new Color(143, 140, 132); //for finding buildings
+	private final static Color BUYCOLOR = new Color(143, 140, 132); //for finding buildings, kind of useless right now
 
 	private Mat image;
 	
