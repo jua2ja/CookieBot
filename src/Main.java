@@ -118,7 +118,6 @@ public class Main {
 		find.display();
 		
 		buy = new Logic(positions);
-
 		
 		//runs main loops of the program
 		while(true)
@@ -126,7 +125,6 @@ public class Main {
 		
 		
 	}
-
 	/**
 	 * main loop for the game
 	 * @param mouse object for the screen device
@@ -134,7 +132,7 @@ public class Main {
 	public static void loop()
 	{
 
-		if((System.currentTimeMillis() / 1000L) % 5 == 0 && done)
+		if((System.currentTimeMillis() / 1000L) % 5 == 0 && done) //(System.currentTimeMillis() / 1000L) % 5 == 0 && done, testing for efficiency
 		{
 			if(buy.upgradeAvailable(cookies))
 			{

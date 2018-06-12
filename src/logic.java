@@ -5,7 +5,7 @@ import org.opencv.core.Point;
 
 public class Logic {
 
-	private final int clickingEfficiency = 10;
+	private final int clickingEfficiency = 83;
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private Building[] buildings = new Building[8];
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
@@ -49,6 +49,7 @@ public class Logic {
 		for(int a = 0; a < 8; a++) {
 			CPS += buildingCPS[a]*buildingCount[a];
 		}
+		CPS += clickingEfficiency;
 		int whichBuilding = mostExpensiveAvailable(cookies, CPS);
 		buildingCosts[whichBuilding] *= 1.15;
 		buildingCount[whichBuilding]++;
@@ -77,7 +78,12 @@ public class Logic {
 		double cps = 0;
 		for(Building build : buildings)
 			cps+= build.returnTotalCPS();
+		cps+=clickingEfficiency;
 		return cps;
 	}
 	
+	public double cheapestCost() {
+		double cost = 0; //finish
+		return cost;
+	}
 }
