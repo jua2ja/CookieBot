@@ -5,7 +5,7 @@ import org.opencv.core.Point;
 
 public class Logic {
 
-	private final int clickingEfficiency = 83;
+	private final int clickingEfficiency = 80;
 	private int[] buildingCount = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	private Building[] buildings = new Building[8];
 	private double[] buildingCosts = {15L, 100L, 500L, 3000L, 10000L, 40000L, 200000L, 1666666L, 123456789L, 3999999999L};
@@ -81,9 +81,5 @@ public class Logic {
 		cps+=clickingEfficiency;
 		return cps;
 	}
-	
-	public double cheapestCost() {
-		double cost = 0; //finish
-		return cost;
-	}
+
 }

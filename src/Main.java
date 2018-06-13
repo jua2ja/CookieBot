@@ -119,6 +119,12 @@ public class Main {
 		
 		buy = new Logic(positions);
 		
+		for(int a = 0; a < 15; a++) {
+			click(cookie);
+		}
+		
+		Point upgrade = find.findUpgrade();
+		
 		//runs main loops of the program
 		while(true)
 			loop();
@@ -131,8 +137,7 @@ public class Main {
 	 */
 	public static void loop()
 	{
-
-		if((System.currentTimeMillis() / 1000L) % 5 == 0 && done) //(System.currentTimeMillis() / 1000L) % 5 == 0 && done, testing for efficiency
+		if((System.currentTimeMillis() / 1000L) % 10 == 0 && done)
 		{
 			if(buy.upgradeAvailable(cookies))
 			{
@@ -140,7 +145,7 @@ public class Main {
 			}
 			else
 			{
-				cookies += (int)(buy.getCPS() * 4.75);
+				cookies += (int)(buy.getCPS() * 9);
 				Building temp = buy.buyBestAvailable(cookies);
 				if(temp != null)
 				{
@@ -159,7 +164,7 @@ public class Main {
 			done = false;
 		}
 		
-		if((System.currentTimeMillis() / 1000L) % 5 == 1 && !done)
+		if((System.currentTimeMillis() / 1000L) % 10 == 1 && !done)
 			done = true;
 		
 		click(cookie);

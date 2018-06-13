@@ -122,6 +122,32 @@ public class FindGameElements {
 	}
 	
 	/**
+	 * Uses template detection to find the first upgrades to appear on the screen
+	 * @return a position of the two upgrades in the form of a Point
+	 */
+	public Point findUpgrade()
+	{
+		BufferedImage temp = null;
+		try {
+			temp = ImageIO.read(new File("data\\example\\cookies\\firstUpgrades.jpg"));
+		} catch (IOException e) {
+			System.out.println("File should be found");
+			System.exit(1);
+		}
+		
+		Mat template = bufferedImageToMat(temp);
+		int cols = image.cols() - template.cols() + 1;
+		int rows = image.rows() - template.rows() + 1;
+		Mat resultTemplate = new Mat(rows, cols, CvType.CV_32FC1);
+		Imgproc.matchTemplate(image, template, resultTemplate, Imgproc.TM_SQDIFF_NORMED);
+		Core.normalize(resultTemplate, resultTemplate, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+		MinMaxLocResult mmr = Core.minMaxLoc(resultTemplate);
+		return new Point((mmr.minLoc.x + 43), (mmr.minLoc.y + 42));
+		
+	}
+	
+	
+	/**
 	 * draws a point onto the 
 	 * @param draw
 	 */
