@@ -119,7 +119,7 @@ public class Main {
 		
 		buy = new Logic(positions);
 		
-		for(int a = 0; a < 16; a++) {
+		for(int a = 0; a < 20; a++) {
 			click(cookie);
 			try {
 				TimeUnit.MILLISECONDS.sleep(10);
