@@ -21,7 +21,7 @@ import boofcv.gui.image.ShowImages;
 public class Main {
 
 	
-	public static final int buildingDistance = 77;
+	public static final int buildingDistance = 95;
 	public static Point cookie;
 	public static Point building;
 	public static Robot mouse;
@@ -115,15 +115,33 @@ public class Main {
 		find.drawPoint(cookie);
 		for(Point building : positions)
 			find.drawPoint(building);
-		find.display();
 		
 		buy = new Logic(positions);
 		
-		for(int a = 0; a < 15; a++) {
+		for(int a = 0; a < 16; a++) {
 			click(cookie);
+			try {
+				TimeUnit.MILLISECONDS.sleep(10);
+			} catch (InterruptedException e) {
+				System.out.println("Failed to sleep for a millisecond... this should never happen");
+			}
 		}
 		
+		click(positions[0]);
+		
+		try {
+			TimeUnit.MILLISECONDS.sleep(100);
+		} catch (InterruptedException e) {
+			System.out.println("Failed to sleep for a millisecond... this should never happen");
+		}
+		
+		find.setImage(FindGameElements.getScreen());
+		
 		Point upgrade = find.findUpgrade();
+		
+		find.drawPoint(upgrade);
+		
+		find.display();
 		
 		//runs main loops of the program
 		while(true)

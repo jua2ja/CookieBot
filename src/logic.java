@@ -66,7 +66,7 @@ public class Logic {
 	private int mostExpensiveAvailable(long cookies, double CPS) {
 		int mostExpensive = -1;
 		for(int a = 0; a < 8; a++) {
-			if(calcTimeTillBuy(a, cookies, CPS) < 300) {
+			if(calcTimeTillBuy(a, cookies, CPS) < 120) {
 				mostExpensive = a;
 			}
 		}
