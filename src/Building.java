@@ -52,21 +52,21 @@ public class Building {
 	}
 
 	/**
-	 * calculates the most CPS that can be aquired from 1 building if you buy all available
+	 * calculates the most CPS that can be acquired from 1 building if you buy all available
 	 * @param cookies
 	 * @return the CPS that can be gained
 	 */
 	public double maxCPSBuy(long cookies) {
+		long tempCookies = cookies;
 		double tempCPS = 0;
 		double tempCost = cost;
-		int maxBuys = 0;
-		int timeLeft = 300;
-		while(cookies > tempCost) {
+		while(tempCookies > tempCost) {
+			tempCookies -= tempCost;
 			tempCost *= 1.15;
 			tempCPS += getSingleCPS();
 		}
 		
-		return tempCPS - getSingleCPS();
+		return tempCPS;// - getSingleCPS();
 	}
 	
 	
@@ -75,11 +75,10 @@ public class Building {
 	 * @param cookies
 	 * @return the max amount of building that can be bought
 	 */
-	public double maxBuys(long cookies)
+	public int maxBuys(long cookies)
 	{
 		double tempCost = cost;
 		int maxBuys = 0;
-		int timeLeft = 300;
 		while(cookies > tempCost) {
 			tempCost *= 1.15;
 			maxBuys++;

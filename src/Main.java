@@ -130,6 +130,8 @@ public class Main {
 		
 		click(positions[0]);
 		
+		buy.buy(0);
+		
 		try {
 			TimeUnit.MILLISECONDS.sleep(100);
 		} catch (InterruptedException e) {
