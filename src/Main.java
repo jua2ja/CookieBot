@@ -28,6 +28,7 @@ public class Main {
 	public static Logic buy;
 	private static long cookies = 0;
 	private static boolean done = false;
+	private static Point upgrade = new Point();
 
 	
 	public static void main(String[] args) {
@@ -137,11 +138,7 @@ public class Main {
 		
 		find.setImage(FindGameElements.getScreen());
 		
-		Point upgrade = find.findUpgrade();
-		
-		find.drawPoint(upgrade);
-		
-		find.display();
+		upgrade = find.findUpgrade();
 		
 		//runs main loops of the program
 		while(true)
@@ -159,7 +156,7 @@ public class Main {
 		{
 			if(buy.upgradeAvailable(cookies))
 			{
-				
+				click(upgrade);
 			}
 			else
 			{

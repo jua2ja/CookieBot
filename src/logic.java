@@ -44,35 +44,6 @@ public class Logic {
 		return false;
 	}
 	
-	public int buyMostExpensive(long cookies) {
-		double CPS = 0;
-		for(int a = 0; a < 8; a++) {
-			CPS += buildingCPS[a]*buildingCount[a];
-		}
-		CPS += clickingEfficiency;
-		int whichBuilding = mostExpensiveAvailable(cookies, CPS);
-		buildingCosts[whichBuilding] *= 1.15;
-		buildingCount[whichBuilding]++;
-		return whichBuilding;
-	}
-	
-	
-	private double calcTimeTillBuy(int whichBuilding, long cookies, double CPS) {
-		double timeTillBuy = (buildingCosts[whichBuilding] - cookies)/CPS;
-		if(timeTillBuy < 0) timeTillBuy = 0;
-		return timeTillBuy;
-	}
-	
-	private int mostExpensiveAvailable(long cookies, double CPS) {
-		int mostExpensive = -1;
-		for(int a = 0; a < 8; a++) {
-			if(calcTimeTillBuy(a, cookies, CPS) < 120) {
-				mostExpensive = a;
-			}
-		}
-		return mostExpensive;
-	}
-	
 	public double getCPS()
 	{
 		double cps = 0;
