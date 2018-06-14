@@ -163,7 +163,7 @@ public class Main {
 			}
 			else
 			{
-				cookies += (int)(buy.getCPS() * 9);
+				cookies += (int)(buy.getCPS());
 				Building temp = buy.buyBestAvailable(cookies);
 				if(temp != null)
 				{
